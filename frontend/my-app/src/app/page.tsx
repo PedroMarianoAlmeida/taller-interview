@@ -1,22 +1,46 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+interface TransactionItem {
+  transaction: string;
+  amount: number;
+}
 
 export default function Home() {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState<string>();
-  const [result, setResult] = useState("");
+  const [transactions, setTransactions] = useState<TransactionItem[]>([]);
 
   const postData = async () => {
-    const res = await fetch("http://localhost:3001/", {
-      method: "POST",
-      body: JSON.stringify({ name, amount }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(res);
+    try {
+      const res = await fetch("http://localhost:3001/", {
+        method: "POST",
+        body: JSON.stringify({ name, amount }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(res);
+    } catch (e) {
+      console.log({ e });
+    }
   };
 
+  const fetchData = async () => {
+    try {
+      const res = await fetch("http://localhost:3001/");
+
+      if (res.statusText !== "OK") throw new Error();
+      const data = await res.json();
+      setTransactions(data.transactions);
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  console.log({ transactions });
   const submitHandler = (e: any) => {
     e.preventDefault();
     console.log("Post", { name, amount });
@@ -40,6 +64,15 @@ export default function Home() {
         />
         <button>Submit</button>
       </form>
+
+      {transactions.length > 0 &&
+        transactions.map(({ amount, transaction }, index) => (
+          <div key={index}>
+            <p className="text-white">
+              {transaction} - {amount}
+            </p>
+          </div>
+        ))}
     </div>
   );
 }
