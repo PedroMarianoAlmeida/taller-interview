@@ -20,7 +20,9 @@ export default function Home() {
           "Content-Type": "application/json",
         },
       });
-      console.log(res);
+      if (res.statusText !== "OK") throw new Error();
+      const data = await res.json();
+      setTransactions(data.transactions);
     } catch (e) {
       console.log({ e });
     }

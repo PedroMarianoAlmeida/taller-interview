@@ -24,6 +24,5 @@ app.post("/", (req, res) => {
   console.log({ test: req.body });
   const { name, amount } = req.body;
   transactions.push({ transaction: name, amount: Number(amount) });
-  console.log({ transactions });
-  res.json({ message: "success" });
+  res.json({ message: "success", transactions });
 });
